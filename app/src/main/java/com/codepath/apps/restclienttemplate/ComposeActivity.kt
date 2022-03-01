@@ -36,10 +36,10 @@ class ComposeActivity : AppCompatActivity() {
         etCompose.addTextChangedListener(object : TextWatcher {
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                 // Fires right as the text is being changed (even supplies the range of text)
-                tvCharCount.setText(count.toString())
+                tvCharCount.setText(etCompose.text.length.toString())
             }
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
-                tvCharCount.setText(count.toString())
+
             }
             override fun afterTextChanged(s: Editable) {
                 Log.e(TAG,"Text changed")
@@ -52,7 +52,7 @@ class ComposeActivity : AppCompatActivity() {
                 Toast.makeText(this,"Empty tweets not allowed!",Toast.LENGTH_SHORT).show()
             }
             if(tweetContent.length>280){
-                Toast.makeText(this,"Tweet is too long! Limit is 140 characters",Toast.LENGTH_SHORT).show()
+                Toast.makeText(this,"Tweet is too long! Limit is 280 characters",Toast.LENGTH_SHORT).show()
             }
             else {
                 client.publishTweet(tweetContent,object:JsonHttpResponseHandler(){

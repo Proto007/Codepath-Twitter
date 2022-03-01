@@ -1,9 +1,17 @@
 package com.codepath.apps.restclienttemplate
 
 import android.annotation.SuppressLint
+import android.app.ActionBar
+import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
+import android.widget.Toast
+import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -22,8 +30,10 @@ class TimelineActivity : AppCompatActivity() {
     @SuppressLint("ResourceAsColor")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_timeline)
+        val actionBar=supportActionBar
 
+        actionBar!!.setBackgroundDrawable(ColorDrawable(Color.parseColor("#1DA1F4")))
+        setContentView(R.layout.activity_timeline)
         client=TwitterApplication.getRestClient(this)
 
         swipeContainer=findViewById(R.id.swipeContainer)
@@ -42,8 +52,30 @@ class TimelineActivity : AppCompatActivity() {
         adapter= TweetsAdapter(tweets)
         rvTweets.layoutManager=LinearLayoutManager(this)
         rvTweets.adapter=adapter
-
         populateHomeTimeline()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_main,menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if(item.itemId==R.id.compose){
+            val intent= Intent(this,ComposeActivity::class.java)
+            startActivityForResult(intent, REQUEST_CODE)
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    override fun onActivityResult(requestCode:Int, resultCode:Int,data:Intent?){
+        if(resultCode== RESULT_OK && requestCode== REQUEST_CODE){
+            val tweet=data?.getParcelableExtra("tweet") as Tweet
+            tweets.add(0,tweet)
+            adapter.notifyItemInserted(0)
+            rvTweets.smoothScrollToPosition(0)
+        }
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
     fun populateHomeTimeline(){
@@ -79,5 +111,6 @@ class TimelineActivity : AppCompatActivity() {
     }
     companion object{
         val TAG="TimelineActivity"
+        val REQUEST_CODE=10
     }
 }
